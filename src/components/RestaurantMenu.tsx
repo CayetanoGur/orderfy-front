@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react';
+import { CartItem } from '../types';
 
 interface MenuItem {
   id: number;
@@ -14,28 +15,28 @@ interface RestaurantMenuProps {
 }
 
 const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
-  const { id } = useParams<{ id: string }>();
+  const { restaurantId, branchId } = useParams<{ restaurantId: string; branchId: string }>();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
   useEffect(() => {
-    // API endpoint to fetch menu items for a specific restaurant
-    // GET /api/restaurants/{id}/menu
+    // API endpoint to fetch menu items for a specific restaurant branch
+    // GET /api/restaurants/{restaurantId}/branches/{branchId}/menu
     const fetchMenuItems = async () => {
       try {
-        // const response = await fetch(`/api/restaurants/${id}/menu`);
-        // const data = await response.json();
-        // setMenuItems(data);
+        const response = await fetch(`/api/restaurants/${restaurantId}/branches/${branchId}/menu`);
+        const data = await response.json();
+        setMenuItems(data);
       } catch (error) {
         console.error('Error fetching menu items:', error);
       }
     };
 
     fetchMenuItems();
-  }, [id]);
+  }, [restaurantId, branchId]);
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Menu for Restaurant {id}</h1>
+      <h1 className="text-3xl font-bold mb-6">Menu</h1>
       <div className="space-y-4">
         {menuItems.map((item) => (
           <div key={item.id} className="bg-white rounded-lg shadow-md p-4 flex justify-between items-center">

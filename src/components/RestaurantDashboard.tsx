@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Trash2 } from 'lucide-react';
 
 interface Dish {
@@ -11,46 +12,93 @@ interface Dish {
 const RestaurantDashboard: React.FC = () => {
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [newDish, setNewDish] = useState({ name: '', price: '', description: '' });
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
     // API endpoint to fetch restaurant's dishes
     // GET /api/restaurant/dishes
     const fetchDishes = async () => {
       try {
-        // const response = await fetch('/api/restaurant/dishes');
-        // const data = await response.json();
-        // setDishes(data);
+        const response = await fetch('/api/restaurant/dishes', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setDishes(data);
+        } else if (response.status === 401) {
+          navigate('/login');
+        }
       } catch (error) {
         console.error('Error fetching dishes:', error);
       }
     };
 
     fetchDishes();
-  }, []);
+  }, [navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewDish({ ...newDish, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newDish.name && newDish.price) {
-      const newDishData = { ...newDish, id: Date.now(), price: parseFloat(newDish.price) };
-      setDishes([...dishes, newDishData]);
-      setNewDish({ name: '', price: '', description: '' });
+      const token = localStorage.getItem('token');
+      const newDishData = { ...newDish, price: parseFloat(newDish.price) };
 
       // API endpoint to add a new dish
       // POST /api/restaurant/dishes
-      // Body: newDishData
+      try {
+        const response = await fetch('/api/restaurant/dishes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(newDishData),
+        });
+        if (response.ok) {
+          const addedDish = await response.json();
+          setDishes([...dishes, addedDish]);
+          setNewDish({ name: '', price: '', description: '' });
+        } else if (response.status === 401) {
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Error adding dish:', error);
+      }
     }
   };
 
-  const handleDelete = (id: number) => {
-    setDishes(dishes.filter(dish => dish.id !== id));
+  const handleDelete = async (id: number) => {
+    const token = localStorage.getItem('token');
 
     // API endpoint to delete a dish
     // DELETE /api/restaurant/dishes/{id}
+    try {
+      const response = await fetch(`/api/restaurant/dishes/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        setDishes(dishes.filter(dish => dish.id !== id));
+      } else if (response.status === 401) {
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error('Error deleting dish:', error);
+    }
   };
 
   return (

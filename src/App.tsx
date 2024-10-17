@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import RestaurantList from './components/RestaurantList';
+import BranchList from './components/BranchList';
 import RestaurantMenu from './components/RestaurantMenu';
 import Cart from './components/Cart';
 import Checkout from './components/Checkout';
 import RestaurantDashboard from './components/RestaurantDashboard';
+import Login from './components/Login';
+import { CartItem } from './types';
 
 const App: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -21,8 +24,9 @@ const App: React.FC = () => {
         <main className="container mx-auto px-4 py-8">
           <Routes>
             <Route path="/" element={<RestaurantList />} />
+            <Route path="/restaurant/:restaurantSlug" element={<BranchList />} />
             <Route
-              path="/restaurant/:id"
+              path="/restaurant/:restaurantId/branch/:branchSlug"
               element={<RestaurantMenu addToCart={addToCart} />}
             />
             <Route
@@ -31,6 +35,7 @@ const App: React.FC = () => {
             />
             <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
             <Route path="/dashboard" element={<RestaurantDashboard />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </main>
       </div>
