@@ -24,3 +24,12 @@ export interface LoginCredentials {
   username: string;
   password: string;
 }
+
+export interface MenuItem {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  image: string;
+  in_stock: boolean;
+}

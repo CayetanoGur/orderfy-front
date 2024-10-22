@@ -1,38 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react';
-import { CartItem } from '../types';
-
-interface MenuItem {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-}
+import { CartItem, MenuItem } from '../types';
 
 interface RestaurantMenuProps {
   addToCart: (item: CartItem) => void;
 }
 
 const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
-  const { restaurantId, branchId } = useParams<{ restaurantId: string; branchId: string }>();
+  const { restaurantSlug, branchSlug, typeOfCategorySlug} = useParams<{
+    restaurantSlug: string;
+    branchSlug: string;
+    typeOfCategorySlug: string;
+  }>();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
   useEffect(() => {
-    // API endpoint to fetch menu items for a specific restaurant branch
-    // GET /api/restaurants/{restaurantId}/branches/{branchId}/menu
     const fetchMenuItems = async () => {
       try {
-        const response = await fetch(`/api/restaurants/${restaurantId}/branches/${branchId}/menu`);
+        const response = await fetch(`http://127.0.0.1:8000/service/get_menu/${restaurantSlug}/${branchSlug}/napolitana`);
         const data = await response.json();
-        setMenuItems(data);
+        console.log('Menu items:', data);
+        // Assuming menu_items is an array containing arrays of menu items
+        setMenuItems(data.menu_items.map((menu_items: any) => ({
+          id: menu_items.id,
+          name: menu_items.name,
+          description: menu_items.description,
+          price: menu_items.price,
+          image: `http://127.0.0.1:8000/media/${menu_items.image}`,
+          in_stock: menu_items.in_stock,
+        })));
       } catch (error) {
         console.error('Error fetching menu items:', error);
       }
     };
 
     fetchMenuItems();
-  }, [restaurantId, branchId]);
+  }, [restaurantSlug, branchSlug]);
 
   return (
     <div>
@@ -43,7 +47,7 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
             <div>
               <h2 className="text-xl font-semibold">{item.name}</h2>
               <p className="text-gray-600">{item.description}</p>
-              <p className="text-green-600 font-bold mt-2">${item.price.toFixed(2)}</p>
+              <p className="text-green-600 font-bold mt-2">${item.price}</p>
             </div>
             <button
               onClick={() => addToCart({ ...item, quantity: 1 })}

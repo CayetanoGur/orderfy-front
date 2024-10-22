@@ -25,10 +25,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<RestaurantList />} />
             <Route path="/restaurant/:restaurantSlug" element={<BranchList />} />
-            <Route
-              path="/restaurant/:restaurantId/branch/:branchSlug"
-              element={<RestaurantMenu addToCart={addToCart} />}
-            />
+            <Route path="/restaurant/:restaurantSlug/:branchSlug" element={<RestaurantMenu addToCart={addToCart} />} />
             <Route
               path="/cart"
               element={<Cart items={cartItems} setItems={setCartItems} />}

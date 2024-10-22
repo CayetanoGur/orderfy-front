@@ -8,20 +8,21 @@ const { restaurantSlug } = useParams<{ restaurantSlug: string }>();
 
   useEffect(() => {
     const fetchBranches = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/service/${restaurantSlug}`); 
-        const data = await response.json();
-        console.log('branches:', data);
-        
-        setBranches(data.branches.map((branch: any) => ({
-          id: branch.id,
-          name: branch.name,
-          image: `http://127.0.0.1:8000/media/${branch.image}`, 
-          address: branch.ubication, // Placeholder if not available; update if needed
-        })));
-      } catch (error) {
-        console.error('Error fetching branch data:', error);
-      }
+      // try {
+      const response = await fetch(`http://127.0.0.1:8000/service/${restaurantSlug}`); 
+      const data = await response.json();
+      console.log('branches:', data);
+      
+      setBranches(data.branches.map((branch: any) => ({
+        id: branch.id,
+        name: branch.name,
+        image: `http://127.0.0.1:8000/media/${branch.image}`, 
+        address: branch.ubication, 
+        slug: branch.slug,
+      })));
+      // } catch (error) {
+      //   console.error('Error fetching branch data:', error);
+      // }
     };
   
     fetchBranches();
@@ -33,8 +34,8 @@ const { restaurantSlug } = useParams<{ restaurantSlug: string }>();
       <div className="space-y-4">
         {branches.map((branch) => (
           <Link
-            key={branch.id}
-            to={`/restaurant/${restaurantSlug}/branch/${branch.id}`}
+            key={branch.slug}
+            to={`/restaurant/${restaurantSlug}/${branch.slug}`}
             className="block bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300"
           >
              <img src={branch.image} alt={branch.name} className="w-full h-48 object-cover" />
