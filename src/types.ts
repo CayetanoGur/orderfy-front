@@ -10,6 +10,13 @@ export interface Restaurant {
   slug: string;
   name: string;
   image: string;
+  logo: string;
+  description: string;
+  primary_color: string;
+  secondary_color: string;
+  q_branches: number;
+  branches: Branch[]; // Add branches array to Restaurant
+  // other fields if necessary
 }
 
 export interface Branch {
@@ -18,6 +25,8 @@ export interface Branch {
   name: string;
   address: string;
   image: string;
+  ubication: string; // add ubication here if needed
+  // other fields as per JSON, like created, updated if necessary
   types: TypeOfCategory[];
 }
 
