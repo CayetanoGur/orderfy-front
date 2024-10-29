@@ -18,8 +18,15 @@ export interface Branch {
   name: string;
   address: string;
   image: string;
+  types: TypeOfCategory[];
 }
 
+export interface TypeOfCategory {
+  id: number;
+  name: string;
+  slug: string;
+  image: string;
+}
 export interface LoginCredentials {
   username: string;
   password: string;

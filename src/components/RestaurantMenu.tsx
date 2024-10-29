@@ -19,7 +19,7 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
     const fetchMenuItems = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/service/get_menu/${restaurantSlug}/${branchSlug}/napolitana`
+          `http://127.0.0.1:8000/service/${restaurantSlug}/${branchSlug}/napolitana`
         );
         const data = await response.json();
         console.log("Menu items:", data);
