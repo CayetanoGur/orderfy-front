@@ -27,14 +27,15 @@ export interface Branch {
   image: string;
   ubication: string; // add ubication here if needed
   // other fields as per JSON, like created, updated if necessary
-  types: TypeOfCategory[];
+  types: MenuType[];
 }
 
-export interface TypeOfCategory {
+export interface MenuType {
   id: number;
   name: string;
-  slug: string;
-  image: string;
+  slug: string; // add slug here if needed
+  image: string; // add image here if needed
+  items: MenuItem[];
 }
 export interface LoginCredentials {
   username: string;
