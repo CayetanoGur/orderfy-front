@@ -9,21 +9,15 @@ const Header: React.FC = () => {
         <Link to="/" className="text-2xl font-bold">Orderfy</Link>
         <nav>
           <ul className="flex space-x-4">
-            <li>
-              <Link to="/" className="hover:text-green-200">
-                <Menu className="inline-block mr-1" size={20} />
-                Restaurants
-              </Link>
-            </li>
-            <li>
+            
               <Link to="/cart" className="hover:text-green-200">
                 <ShoppingCart className="inline-block mr-1" size={20} />
                 Cart
               </Link>
-            </li>
-            <li>
-              <Link to="/dashboard" className="hover:text-green-200">Dashboard</Link>
-            </li>
+            
+            {/* <li>
+              <Link to="/dashboard" className="hover:text-green-200">Dash</Link>
+            </li> */}
           </ul>
         </nav>
       </div>

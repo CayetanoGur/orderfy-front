@@ -87,7 +87,7 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
                     <h3 className="text-xl font-semibold">{item.name}</h3>
                     <p className="text-gray-600">{item.description}</p>
                     <p className="text-green-600 font-bold mt-2">
-                      ${item.price.toFixed(2)}
+                      ${item.price.toFixed(0)}
                     </p>
                   </div>
                   <img 
@@ -112,32 +112,3 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
 };
 
 export default RestaurantMenu;
-
-
-// useEffect(() => {
-//   const fetchMenuItems = async () => {
-//     try {
-//       const response = await fetch(
-//         `http://127.0.0.1:8000/service/${restaurantSlug}/${branchSlug}/napolitana`
-//       );
-//       const data = await response.json();
-//       console.log("Menu items:", data);
-//       // Assuming menu_items is an array containing arrays of menu items
-//       setMenuItems(
-//         data.menu_items[0].map((menu_item: any) => ({
-//           id: menu_item.id,
-//           name: menu_item.name,
-//           description: menu_item.description,
-//           price: menu_item.price,
-//           image: `http://127.0.0.1:8000/media/${menu_item.image}`,
-//           in_stock: menu_item.in_stock,
-//         }))
-//       );
-//       console.log("AFTER, Menu items:", menuItems[0]);
-//     } catch (error) {
-//       console.error("Error fetching menu items:", error);
-//     }
-//   };
-
-//   fetchMenuItems();
-// }, [restaurantSlug, branchSlug]);

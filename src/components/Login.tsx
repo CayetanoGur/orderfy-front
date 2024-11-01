@@ -2,6 +2,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginCredentials } from '../types';
 
+function getCookie(name: string | any[]) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState<LoginCredentials>({ username: '', password: '' });
   const navigate = useNavigate();
@@ -12,29 +27,34 @@ const Login: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // API endpoint to authenticate
-    // POST /api/login
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        navigate('/dashboard');
-      } else {
-        alert('Login failed. Please try again.');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('An error occurred. Please try again.');
+  e.preventDefault();
+
+  const csrfToken = getCookie('csrftoken') || ''; // Get the CSRF token from the cookies
+  console.log('CSRF token:', csrfToken);
+  console.log('credential:',credentials);
+  try {
+    const response = await fetch('http://127.0.0.1:8000/database/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken, // Incluye el token CSRF en los encabezados
+      },
+      credentials: 'include', // Asegúrate de que se envían las cookies con la solicitud
+      body: JSON.stringify(credentials),
+    });
+    console.log('response:', response);
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      navigate('/dashboard');
+    } else {
+      alert('Login failed. Please try again.');
     }
-  };
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('An error occurred. Please try again.');
+  }
+};
 
   return (
     <div className="max-w-md mx-auto mt-10">
