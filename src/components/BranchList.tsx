@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Branch } from '../types';
 
+// NO SE USA ESTE ARCHIVO POR AHROA, PLANEO NO USARLO MAS YA QUE LAS BRANCHES SE MUESTRAN EN RESTUARANTLIST
+
+
 const BranchList: React.FC = () => {
 const { restaurantSlug } = useParams<{ restaurantSlug: string }>();
   const [branches, setBranches] = useState<Branch[]>([]);
