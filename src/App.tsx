@@ -9,6 +9,7 @@ import Checkout from './components/Checkout';
 import RestaurantDashboard from './components/RestaurantDashboard';
 import Login from './components/Login';
 import { CartItem } from './types';
+import { AuthProvider } from './context/AuthContext'; // Import AuthProvider
 
 const App: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -18,24 +19,23 @@ const App: React.FC = () => {
   };
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-100">
-        <Header />
-        <main className="container mx-auto px-4 py-8">
-          <Routes>
-            <Route path="/" element={<RestaurantList />} />
-            <Route path="/restaurant/:restaurantSlug" element={<BranchList />} />
-            <Route path="/restaurant/:restaurantSlug/:branchSlug" element={<RestaurantMenu addToCart={addToCart} />} />
-            <Route
-              path="/cart"
-              element={<Cart items={cartItems} setItems={setCartItems} />}
-            />
-            <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
-            <Route path="/dashboard" element={<RestaurantDashboard />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
-        </main>
-      </div>
+    <Router> {/* Ensure Router is the outermost component */}
+      <AuthProvider> {/* Wrap your app with AuthProvider inside Router */}
+        <div className="min-h-screen bg-gray-100">
+          <Header />
+          <main className="container mx-auto px-4 py-8">
+            <Routes>
+              <Route path="/" element={<RestaurantList />} />
+              <Route path="/restaurant/:restaurantSlug" element={<BranchList />} />
+              <Route path="/restaurant/:restaurantSlug/:branchSlug" element={<RestaurantMenu addToCart={addToCart} />} />
+              <Route path="/cart" element={<Cart items={cartItems} setItems={setCartItems} />} />
+              <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
+              <Route path="/dashboard" element={<RestaurantDashboard />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </main>
+        </div>
+      </AuthProvider>
     </Router>
   );
 };

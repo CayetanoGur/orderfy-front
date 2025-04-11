@@ -50,3 +50,10 @@ export interface MenuItem {
   image: string;
   in_stock: boolean;
 }
+
+export interface AuthUser {
+  id: number;
+  email: string;
+  restaurantId: number;
+  token: string;
+}
