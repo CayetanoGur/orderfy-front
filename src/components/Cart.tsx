@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, MinusCircle, PlusCircle } from 'lucide-react';
+import { CartItem } from '../types';
 
 interface CartProps {
   items: CartItem[];

@@ -1,22 +1,20 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginCredentials } from '../types';
 
-function getCookie(name: string | any[]) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
+function getCookie(name: string) {
+  const cookieArr = document.cookie.split(';');
+  for (let i = 0; i < cookieArr.length; i++) {
+    const cookiePair = cookieArr[i].trim();
+    if (cookiePair.startsWith(name + '=')) {
+      return decodeURIComponent(cookiePair.substring(name.length + 1));
     }
   }
-  return cookieValue;
+  console.log('Cookie not found:', name);
+  console.log('Cookies:', document.cookie);
+  return null;
 }
-
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState<LoginCredentials>({ username: '', password: '' });
   const navigate = useNavigate();
@@ -37,11 +35,12 @@ const Login: React.FC = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken, // Incluye el token CSRF en los encabezados
+        'X-CSRFToken': csrfToken, // Ensure csrfToken is a string
       },
       credentials: 'include', // Asegúrate de que se envían las cookies con la solicitud
       body: JSON.stringify(credentials),
     });
+    
     console.log('response:', response);
     if (response.ok) {
       const data = await response.json();

@@ -15,9 +15,9 @@ const Header: React.FC = () => {
                 Cart
               </Link>
             
-            {/* <li>
+            <li>
               <Link to="/dashboard" className="hover:text-green-200">Dash</Link>
-            </li> */}
+            </li>
           </ul>
         </nav>
       </div>
