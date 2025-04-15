@@ -1,3 +1,17 @@
+export interface Order {
+  id: number;
+  items: OrderItem[];
+  total: number;
+  status: string; // e.g., 'pending', 'completed'
+}
+
+export interface OrderItem {
+  id: number;
+  name: string;
+  quantity: number;
+  price: number;
+}
+
 export interface CartItem {
   id: number;
   name: string;
@@ -15,8 +29,7 @@ export interface Restaurant {
   primary_color: string;
   secondary_color: string;
   q_branches: number;
-  branches: Branch[]; // Add branches array to Restaurant
-  // other fields if necessary
+  branches: Branch[];
 }
 
 export interface Branch {
@@ -25,21 +38,17 @@ export interface Branch {
   name: string;
   address: string;
   image: string;
-  ubication: string; // add ubication here if needed
-  // other fields as per JSON, like created, updated if necessary
+  ubication: string;
   types: MenuType[];
+  orders: Order[]; // Add orders array to Branch
 }
 
 export interface MenuType {
   id: number;
   name: string;
-  slug: string; // add slug here if needed
-  image: string; // add image here if needed
+  slug: string;
+  image: string;
   items: MenuItem[];
-}
-export interface LoginCredentials {
-  username: string;
-  password: string;
 }
 
 export interface MenuItem {
@@ -51,9 +60,15 @@ export interface MenuItem {
   in_stock: boolean;
 }
 
+export interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
 export interface AuthUser {
   id: number;
   email: string;
   restaurantId: number;
   token: string;
+  restaurantSlug: string;  // Add this line
 }

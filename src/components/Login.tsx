@@ -5,23 +5,29 @@ import { LogIn } from 'lucide-react';
 
 const Login: React.FC = () => {
   const { login, user } = useAuth();
-  const [username, setUsername] = useState(''); // Change to use 'username'
+  const [username, setUsername] = useState(''); 
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  //console.log('Rendered Login Component'); // To see if the component is being rendered
 
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(username, password); // Pass 'username' instead of 'email'
+      console.log('Username:', username); // Verify username
+      await login(username, password);
+      console.log('Login successful'); // If login resolves successfully
     } catch (err) {
+      console.error('Login failed:', err); // Print the error if login fails
       setError('Invalid credentials');
     }
   };
-
+  
+  if (user) {
+    console.log('User is authenticated, navigating to dashboard'); // Check if user is set
+    return <Navigate to="/dashboard" replace />;
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -44,10 +50,10 @@ const Login: React.FC = () => {
               <input
                 id="username"
                 name="username"
-                type="text"  // Change type to "text"
+                type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Username"  // Change placeholder to "Username"
+                placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />

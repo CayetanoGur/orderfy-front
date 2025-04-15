@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const login = async (username: string, password: string) => { // Change parameter to 'username'
+  const login = async (username: string, password: string) => { 
     try {
       const csrfToken = getCSRFToken();
       const response = await fetch('http://127.0.0.1:8000/database/api/login', {
@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'X-CSRFToken': csrfToken || '',
         },
         credentials: 'include',
-        body: JSON.stringify({ username, password }), // Use 'username' field
+        body: JSON.stringify({ username, password }),
       });
   
       if (!response.ok) {
@@ -82,7 +82,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
       const data = await response.json();
       localStorage.setItem('authToken', data.token);
-      setUser(data.user);
+  
+      setUser(prevUser => ({
+        ...data.user,
+        restaurantId: prevUser?.restaurantId ?? null,
+        restaurantSlug: data.user.restaurantSlug,
+      }));
+  
       navigate('/dashboard');
     } catch (error) {
       throw new Error('Login failed');
