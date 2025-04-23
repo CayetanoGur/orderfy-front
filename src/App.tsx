@@ -1,3 +1,5 @@
+// App.tsx
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
@@ -7,9 +9,10 @@ import RestaurantMenu from './components/RestaurantMenu';
 import Cart from './components/Cart';
 import Checkout from './components/Checkout';
 import RestaurantDashboard from './components/RestaurantDashboard';
+import AddDish from './components/AddDish';  // Import the AddDish component
 import Login from './components/Login';
 import { CartItem } from './types';
-import { AuthProvider } from './context/AuthContext'; // Import AuthProvider
+import { AuthProvider } from './context/AuthContext';
 
 const App: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -19,8 +22,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <Router> {/* Ensure Router is the outermost component */}
-      <AuthProvider> {/* Wrap your app with AuthProvider inside Router */}
+    <Router>
+      <AuthProvider>
         <div className="min-h-screen bg-gray-100">
           <Header />
           <main className="container mx-auto px-4 py-8">
@@ -31,6 +34,7 @@ const App: React.FC = () => {
               <Route path="/cart" element={<Cart items={cartItems} setItems={setCartItems} />} />
               <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
               <Route path="/dashboard" element={<RestaurantDashboard />} />
+              <Route path="/add-dish" element={<AddDish />} />  // Set up routing for AddDish
               <Route path="/login" element={<Login />} />
             </Routes>
           </main>

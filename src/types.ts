@@ -70,5 +70,26 @@ export interface AuthUser {
   email: string;
   restaurantId: number;
   token: string;
-  restaurantSlug: string;  // Add this line
+  restaurantSlug: string;
+}
+
+// Additional interfaces for RestaurantDashboard
+export interface RestaurantInfo {
+  id: number;
+  name: string;
+  description: string;
+  branches: Branch[];
+  orders: Order[];
+  image: string;
+  logo: string;
+  primary_color: string;
+  secondary_color: string;
+}
+
+export interface BranchInfo {
+  id: number;
+  name: string;
+  ubication: string;
+  slug: string;
+  image: string;
 }
