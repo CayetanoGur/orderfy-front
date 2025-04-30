@@ -54,10 +54,12 @@ export interface MenuType {
 export interface MenuItem {
   id: number;
   name: string;
-  price: number;
   description: string;
-  image: string;
+  price: number;
+  image: string | File;
   in_stock: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface LoginCredentials {
@@ -84,6 +86,7 @@ export interface RestaurantInfo {
   logo: string;
   primary_color: string;
   secondary_color: string;
+  slug: string;
 }
 
 export interface BranchInfo {

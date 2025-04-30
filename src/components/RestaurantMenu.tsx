@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { PlusCircle, Clock } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { PlusCircle, Clock, ArrowLeft } from "lucide-react";
 import { CartItem, MenuType } from "../types";
 
 interface RestaurantMenuProps {
@@ -9,6 +9,7 @@ interface RestaurantMenuProps {
 
 const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
   const { restaurantSlug, branchSlug } = useParams<{ restaurantSlug: string; branchSlug: string }>();
+  const navigate = useNavigate();
   const [menuTypes, setMenuTypes] = useState<MenuType[]>([]);
   const [activeType, setActiveType] = useState<number | null>(null);
 
@@ -47,6 +48,13 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
 
   return (
     <div>
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center text-gray-600 hover:text-gray-800 mb-6 transition-colors duration-200"
+      >
+        <ArrowLeft size={20} className="mr-2" />
+        Go Back
+      </button>
       <h1 className="text-3xl font-bold mb-6">Restaurant Menu</h1>
       
       {/* Menu Type Tabs */}
@@ -91,7 +99,7 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
                     </p>
                   </div>
                   <img 
-                    src={item.image} 
+                    src={item.image as string} 
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded-full mr-4" />
                   <button

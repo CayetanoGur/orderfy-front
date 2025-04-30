@@ -11,8 +11,10 @@ import Checkout from './components/Checkout';
 import RestaurantDashboard from './components/RestaurantDashboard';
 import AddDish from './components/AddDish';  // Import the AddDish component
 import Login from './components/Login';
+import BranchMenu from './components/BranchMenu';
 import { CartItem } from './types';
 import { AuthProvider } from './context/AuthContext';
+import EditMenuItem from './components/EditMenuItem';
 
 const App: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -36,6 +38,9 @@ const App: React.FC = () => {
               <Route path="/dashboard" element={<RestaurantDashboard />} />
               <Route path="/add-dish" element={<AddDish />} />  // Set up routing for AddDish
               <Route path="/login" element={<Login />} />
+              <Route path="/dashboard/branch/:restaurantSlug/:branchSlug/menu" element={<BranchMenu />} />
+              <Route path="/dashboard/branch/:restaurantSlug/:branchSlug/orders" element={<div>Orders Page Coming Soon</div>} />
+              <Route path="/dashboard/branch/:restaurantSlug/:branchSlug/edit_menu_item/:itemId" element={<EditMenuItem />} />
             </Routes>
           </main>
         </div>

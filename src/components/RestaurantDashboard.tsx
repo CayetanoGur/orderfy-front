@@ -38,6 +38,7 @@ const RestaurantDashboard: React.FC = () => {
             logo: data.restaurant.logo,
             primary_color: data.restaurant.primary_color,
             secondary_color: data.restaurant.secondary_color,
+            slug: data.restaurant.slug
           });
           setBranch({
             id: data.branch.id,
@@ -58,7 +59,9 @@ const RestaurantDashboard: React.FC = () => {
             description: item.description,
             image: item.image,
             price: item.price,
-            in_stock: item.in_stock // Ensure 'in_stock' is included
+            in_stock: item.in_stock,
+            created_at: item.created_at || new Date().toISOString(),
+            updated_at: item.updated_at || new Date().toISOString()
           })));
         }
       } catch (error) {
@@ -71,6 +74,18 @@ const RestaurantDashboard: React.FC = () => {
 
   const handleBranchClick = (branchId: number) => {
     navigate(`/dashboard/branch/${branchId}/menu`);
+  };
+
+  const handleMenuClick = (branchId: number) => {
+    if (restaurant && branch) {
+      navigate(`/dashboard/branch/${restaurant.slug}/${branch.slug}/menu`);
+    }
+  };
+
+  const handleOrdersClick = (branchId: number) => {
+    if (restaurant && branch) {
+      navigate(`/dashboard/branch/${restaurant.slug}/${branch.slug}/orders`);
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -154,22 +169,35 @@ const RestaurantDashboard: React.FC = () => {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Menu
+            Menuuu
           </button>
         </div>
 
         {activeTab === 'branches' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {branch && (
-              <div
-                onClick={() => handleBranchClick(branch.id)}
-                className="bg-gray-50 p-4 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors duration-200"
-              >
-                <div className="flex items-center mb-2">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center mb-4">
                   <MapPin size={20} className="text-green-500 mr-2" />
                   <h3 className="text-lg font-semibold">{branch.name}</h3>
                 </div>
-                <p className="text-gray-600">{branch.ubication}</p>
+                <p className="text-gray-600 mb-4">{branch.ubication}</p>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleMenuClick(branch.id)}
+                    className="flex-1 bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 flex items-center justify-center"
+                  >
+                    <ClipboardList size={20} className="mr-2" />
+                    Menu
+                  </button>
+                  <button
+                    onClick={() => handleOrdersClick(branch.id)}
+                    className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center"
+                  >
+                    <ClipboardList size={20} className="mr-2" />
+                    Orders
+                  </button>
+                </div>
               </div>
             )}
           </div>
