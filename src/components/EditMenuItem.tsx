@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MenuItem } from '../types';
+
+interface MenuItem {
+  id: number;
+  name: string;
+  description: string;
+  image: string | File;
+  price: number;
+  in_stock: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 const EditMenuItem: React.FC = () => {
   const { user } = useAuth();
@@ -54,7 +64,7 @@ const EditMenuItem: React.FC = () => {
       formData.append('description', menuItem.description);
       formData.append('price', menuItem.price.toString());
       formData.append('in_stock', menuItem.in_stock ? 'true' : 'false');
-      if (menuItem.image instanceof File) {
+      if (menuItem.image && typeof menuItem.image !== 'string') {
         formData.append('image', menuItem.image);
       }
 
@@ -144,7 +154,8 @@ const EditMenuItem: React.FC = () => {
             type="file"
             onChange={(e) => {
               if (e.target.files && e.target.files[0]) {
-                setMenuItem({ ...menuItem, image: e.target.files[0] });
+                const file = e.target.files[0];
+                setMenuItem({ ...menuItem, image: file });
               }
             }}
             className="mt-1 block w-full"

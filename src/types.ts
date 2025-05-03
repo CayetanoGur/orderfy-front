@@ -21,26 +21,34 @@ export interface CartItem {
 
 export interface Restaurant {
   id: number;
-  slug: string;
   name: string;
+  description: string;
   image: string;
   logo: string;
-  description: string;
   primary_color: string;
   secondary_color: string;
-  q_branches: number;
-  branches: Branch[];
+  slug: string;
 }
 
 export interface Branch {
   id: number;
-  slug: string;
   name: string;
-  address: string;
-  image: string;
   ubication: string;
-  types: MenuType[];
-  orders: Order[]; // Add orders array to Branch
+  slug: string;
+  image: string;
+}
+
+export interface Type {
+  id: number;
+  name: string;
+  slug: string;
+  image: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
 }
 
 export interface MenuType {
@@ -55,11 +63,13 @@ export interface MenuItem {
   id: number;
   name: string;
   description: string;
+  image: string;
   price: number;
-  image: string | File;
   in_stock: boolean;
   created_at: string;
   updated_at: string;
+  type?: string;
+  category?: string;
 }
 
 export interface LoginCredentials {

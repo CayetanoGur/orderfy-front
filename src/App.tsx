@@ -12,6 +12,8 @@ import RestaurantDashboard from './components/RestaurantDashboard';
 import AddDish from './components/AddDish';  // Import the AddDish component
 import Login from './components/Login';
 import BranchMenu from './components/BranchMenu';
+import RestaurantAdmin from './components/RestaurantAdmin';
+import EditRestaurant from './components/EditRestaurant';
 import { CartItem } from './types';
 import { AuthProvider } from './context/AuthContext';
 import EditMenuItem from './components/EditMenuItem';
@@ -41,6 +43,10 @@ const App: React.FC = () => {
               <Route path="/dashboard/branch/:restaurantSlug/:branchSlug/menu" element={<BranchMenu />} />
               <Route path="/dashboard/branch/:restaurantSlug/:branchSlug/orders" element={<div>Orders Page Coming Soon</div>} />
               <Route path="/dashboard/branch/:restaurantSlug/:branchSlug/edit_menu_item/:itemId" element={<EditMenuItem />} />
+              <Route path="/dashboard/restaurant/:restaurantSlug/:branchSlug/:typeSlug" element={<BranchMenu />} />
+              <Route path="/dashboard/restaurant/:restaurantSlug" element={<RestaurantDashboard />} />
+              <Route path="/dashboard/restaurant/:restaurantSlug/admin" element={<RestaurantAdmin />} />
+              <Route path="/dashboard/restaurant/:restaurantSlug/edit" element={<EditRestaurant />} />
             </Routes>
           </main>
         </div>
