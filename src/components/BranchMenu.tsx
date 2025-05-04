@@ -460,23 +460,32 @@ const BranchMenu: React.FC = () => {
       </div>
 
       {/* Type Selection Buttons */}
-      <div className="flex space-x-2 mb-8 overflow-x-auto pb-2">
-        {menuTypes.map((type) => (
-          <button
-            key={type.slug}
-            onClick={() => {
-              console.log('Setting selected type to:', type.slug);
-              setSelectedType(type.slug);
-            }}
-            className={`px-4 py-2 rounded-full transition-colors duration-200 whitespace-nowrap ${
-              selectedType === type.slug
-                ? 'bg-blue-500 text-white shadow-md'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {type.name || type.slug}
-          </button>
-        ))}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex space-x-2 overflow-x-auto pb-2">
+            {menuTypes.map((type) => (
+              <button
+                key={type.slug}
+                onClick={() => {
+                  console.log('Setting selected type to:', type.slug);
+                  setSelectedType(type.slug);
+                }}
+                className={`px-4 py-2 rounded-full transition-colors duration-200 whitespace-nowrap ${
+                  selectedType === type.slug
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {type.name || type.slug}
+              </button>
+            ))}
+        </div>
+        <button
+          onClick={() => setIsAddFormOpen(true)}
+          className="flex items-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+        >
+          <PlusCircle className="mr-2" />
+          Add Menu Item
+        </button>
       </div>
 
       {/* Menu Items Display */}
