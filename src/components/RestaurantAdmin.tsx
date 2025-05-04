@@ -55,6 +55,7 @@ const RestaurantAdmin: React.FC = () => {
 
     try {
       setLoading(true);
+      console.log(restaurantSlug);
       const response = await fetch(`http://127.0.0.1:8000/database/${restaurantSlug}/`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -175,9 +176,6 @@ const RestaurantAdmin: React.FC = () => {
     navigate(`/dashboard/restaurant/${restaurantSlug}/${branchSlug}/${typeSlug}/edit_category/${categorySlug}`);
   };
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-red-500 text-center p-4">{error}</div>;
