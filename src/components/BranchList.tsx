@@ -43,7 +43,7 @@ const { restaurantSlug } = useParams<{ restaurantSlug: string }>();
           >
              <img src={branch.image} alt={branch.name} className="w-full h-48 object-cover" />
             <h2 className="text-xl font-semibold">{branch.name}</h2>
-            <p className="text-gray-600">{branch.address}</p>
+            {/* <p className="text-gray-600">{branch.address}</p> */}
           </Link>
         ))}
       </div>

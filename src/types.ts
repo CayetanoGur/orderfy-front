@@ -28,12 +28,14 @@ export interface Restaurant {
   primary_color: string;
   secondary_color: string;
   slug: string;
+  branches: Branch[];
 }
 
 export interface Branch {
   id: number;
   name: string;
   ubication: string;
+  address: string;
   slug: string;
   image: string;
 }
