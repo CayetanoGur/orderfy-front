@@ -326,12 +326,12 @@ const RestaurantAdmin: React.FC = () => {
                 <div key={type.id} className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg font-semibold">{type.name}</h3>
-                    <button
+                    {/* <button
                       onClick={() => handleEditType(branches[0].slug, type.slug)}
                       className="text-blue-500 hover:text-blue-700"
                     >
                       <Edit2 size={20} />
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               ))}
