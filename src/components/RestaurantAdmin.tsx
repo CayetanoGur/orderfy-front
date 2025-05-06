@@ -293,12 +293,12 @@ const RestaurantAdmin: React.FC = () => {
                 <div key={branch.id} className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg font-semibold">{branch.name}</h3>
-                    <button
+                    {/* <button
                       onClick={() => handleEditBranch(branch.slug)}
                       className="text-blue-500 hover:text-blue-700"
                     >
                       <Edit2 size={20} />
-                    </button>
+                    </button> */}
                   </div>
                   <p className="text-gray-600">{branch.ubication}</p>
                 </div>
