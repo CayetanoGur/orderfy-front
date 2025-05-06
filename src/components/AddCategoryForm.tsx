@@ -5,8 +5,8 @@ import { ArrowLeft } from 'lucide-react';
 
 interface CategoryFormData {
   name: string;
-  slug: string;
   type: string;
+  branch: string;
 }
 
 interface Type {
@@ -15,39 +15,80 @@ interface Type {
   slug: string;
 }
 
+interface Branch {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 const AddCategoryForm: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { restaurantSlug, branchSlug } = useParams<{ 
-    restaurantSlug: string; 
-    branchSlug: string;
+  const { restaurantSlug } = useParams<{ 
+    restaurantSlug: string;
   }>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [types, setTypes] = useState<Type[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
-    slug: '',
     type: '',
+    branch: '',
   });
 
+  // Fetch branches
   useEffect(() => {
-    const fetchTypes = async () => {
+    const fetchBranches = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/database/${restaurantSlug}/${branchSlug}/types/`, {
+        const response = await fetch(`http://127.0.0.1:8000/database/${restaurantSlug}/branches/`, {
           headers: {
             'Authorization': `Bearer ${user?.token}`,
           },
         });
         if (response.ok) {
           const data = await response.json();
-          setTypes(data.types);
-          // Set the first type as default if available
-          if (data.types.length > 0) {
-            setFormData(prev => ({
-              ...prev,
-              type: data.types[0].slug
-            }));
+          if (data.branches) {
+            setBranches(data.branches);
+            // Set the first branch as default if available
+            if (data.branches.length > 0) {
+              setFormData(prev => ({
+                ...prev,
+                branch: data.branches[0].slug
+              }));
+            }
+          }
+        }
+      } catch (err) {
+        setError('Failed to fetch branches');
+      }
+    };
+
+    fetchBranches();
+  }, [restaurantSlug, user]);
+
+  // Fetch types when branch changes
+  useEffect(() => {
+    const fetchTypes = async () => {
+      if (!formData.branch) return;
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/database/${restaurantSlug}/${formData.branch}/types/`, {
+          headers: {
+            'Authorization': `Bearer ${user?.token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.types) {
+            setTypes(data.types);
+            // Set the first type as default if available
+            if (data.types.length > 0) {
+              setFormData(prev => ({
+                ...prev,
+                type: data.types[0].slug
+              }));
+            }
           }
         }
       } catch (err) {
@@ -56,14 +97,25 @@ const AddCategoryForm: React.FC = () => {
     };
 
     fetchTypes();
-  }, [restaurantSlug, branchSlug, user]);
+  }, [restaurantSlug, formData.branch, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    console.log('Select changed:', name, value); // Debug log
+    
+    if (name === 'branch') {
+      // Reset type when branch changes
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        type: '' // Reset type when branch changes
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const validateForm = () => {
@@ -71,16 +123,12 @@ const AddCategoryForm: React.FC = () => {
       setError('Name must be less than 80 characters');
       return false;
     }
-    if (formData.slug.length > 20) {
-      setError('Slug must be less than 20 characters');
-      return false;
-    }
-    if (!/^[a-z0-9-]+$/.test(formData.slug)) {
-      setError('Slug can only contain lowercase letters, numbers, and hyphens');
-      return false;
-    }
     if (!formData.type) {
       setError('Please select a type');
+      return false;
+    }
+    if (!formData.branch) {
+      setError('Please select a branch');
       return false;
     }
     return true;
@@ -99,11 +147,17 @@ const AddCategoryForm: React.FC = () => {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
-      formDataToSend.append('slug', formData.slug);
-      formDataToSend.append('type', formData.type);
+      formDataToSend.append('type_of_category', formData.type);
+      formDataToSend.append('branch', formData.branch);
       formDataToSend.append('action', 'save');
 
-      const response = await fetch(`http://127.0.0.1:8000/database/${restaurantSlug}/${branchSlug}/${formData.type}/add_category/`, {
+      console.log('Submitting form data:', {
+        name: formData.name,
+        type: formData.type,
+        branch: formData.branch
+      }); // Debug log
+
+      const response = await fetch(`http://127.0.0.1:8000/database/${restaurantSlug}/add_category1/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${user?.token}`,
@@ -117,7 +171,7 @@ const AddCategoryForm: React.FC = () => {
       }
 
       // Navigate to the menu page with the correct URL structure
-      navigate(`/dashboard/restaurant/${restaurantSlug}/${branchSlug}/menu`);
+      navigate(`/dashboard/restaurant/${restaurantSlug}/${formData.branch}/menu`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while adding the category');
     } finally {
@@ -147,6 +201,30 @@ const AddCategoryForm: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
+            <label htmlFor="branch" className="block text-sm font-medium text-gray-700">
+              Branch
+            </label>
+            <select
+              id="branch"
+              name="branch"
+              value={formData.branch}
+              onChange={handleInputChange}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="">Select a branch</option>
+              {branches.map((branch) => (
+                <option key={branch.id} value={branch.slug}>
+                  {branch.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-sm text-gray-500">
+              Selected branch: {formData.branch}
+            </p>
+          </div>
+
+          <div>
             <label htmlFor="type" className="block text-sm font-medium text-gray-700">
               Type
             </label>
@@ -156,7 +234,8 @@ const AddCategoryForm: React.FC = () => {
               value={formData.type}
               onChange={handleInputChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              disabled={!formData.branch}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100"
             >
               <option value="">Select a type</option>
               {types.map((type) => (
@@ -165,6 +244,9 @@ const AddCategoryForm: React.FC = () => {
                 </option>
               ))}
             </select>
+            <p className="mt-1 text-sm text-gray-500">
+              Selected type: {formData.type}
+            </p>
           </div>
 
           <div>
@@ -181,24 +263,8 @@ const AddCategoryForm: React.FC = () => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               placeholder="Enter category name"
             />
-          </div>
-
-          <div>
-            <label htmlFor="slug" className="block text-sm font-medium text-gray-700">
-              Slug
-            </label>
-            <input
-              type="text"
-              id="slug"
-              name="slug"
-              value={formData.slug}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Enter category slug (e.g., main-dishes)"
-            />
             <p className="mt-1 text-sm text-gray-500">
-              Use lowercase letters, numbers, and hyphens only
+              The slug will be automatically generated from the name
             </p>
           </div>
 

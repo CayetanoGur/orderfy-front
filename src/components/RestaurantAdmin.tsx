@@ -176,6 +176,33 @@ const RestaurantAdmin: React.FC = () => {
     navigate(`/dashboard/restaurant/${restaurantSlug}/${branchSlug}/${typeSlug}/edit_category/${categorySlug}`);
   };
 
+  const handleDeleteCategory = async (branchSlug: string, typeSlug: string, categorySlug: string) => {
+    if (!window.confirm('Are you sure you want to delete this category?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/database/${restaurantSlug}/${branchSlug}/${typeSlug}/${categorySlug}/delete_category/`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${user?.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to delete category');
+      }
+
+      // Refresh the categories list
+      fetchCategories();
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      setError('Failed to delete category');
+    }
+  };
 
   if (error) {
     return <div className="text-red-500 text-center p-4">{error}</div>;
@@ -358,12 +385,20 @@ const RestaurantAdmin: React.FC = () => {
                 <div key={category.id} className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg font-semibold">{category.name}</h3>
-                    <button
-                      onClick={() => handleEditCategory(branches[0].slug, types[0].slug, category.slug)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      <Edit2 size={20} />
-                    </button>
+                    <div className="flex space-x-2">
+                      {/* <button
+                        onClick={() => handleEditCategory(branches[0].slug, types[0].slug, category.slug)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <Edit2 size={20} />
+                      </button> */}
+                      <button
+                        onClick={() => handleDeleteCategory(branches[0].slug, types[0].slug, category.slug)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
