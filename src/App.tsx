@@ -19,6 +19,7 @@ import { AuthProvider } from './context/AuthContext';
 import EditMenuItem from './components/EditMenuItem';
 import OrdersDash from './components/OrdersDash';
 import AddBranchForm from './components/AddBranchForm';
+import AddTypeForm from './components/AddTypeForm';
 
 const App: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -50,6 +51,7 @@ const App: React.FC = () => {
               <Route path="/dashboard/restaurant/:restaurantSlug/admin" element={<RestaurantAdmin />} />
               <Route path="/dashboard/restaurant/:restaurantSlug/edit" element={<EditRestaurant />} />
               <Route path="/dashboard/restaurant/:restaurantSlug/add_branch" element={<AddBranchForm />} />
+              <Route path="/dashboard/restaurant/:restaurantSlug/:branchSlug/add_type" element={<AddTypeForm />} />
             </Routes>
           </main>
         </div>
