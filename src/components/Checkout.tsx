@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
 
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 interface CheckoutProps {
   cartItems: CartItem[];
 }
