@@ -9,9 +9,11 @@ interface CartItem {
 
 interface CheckoutProps {
   cartItems: CartItem[];
+  restaurantSlug: string;
+  branchSlug: string;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ cartItems }) => {
+const Checkout: React.FC<CheckoutProps> = ({ cartItems, restaurantSlug, branchSlug }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,7 +27,12 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const orderData = { ...formData, items: cartItems };
+    const orderData = { 
+      ...formData, 
+      items: cartItems,
+      restaurantSlug,
+      branchSlug
+    };
     console.log('Order submitted:', orderData);
 
     // API endpoint to submit the order

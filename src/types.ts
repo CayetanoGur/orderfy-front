@@ -17,6 +17,8 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  restaurantSlug: string;
+  branchSlug: string;
 }
 
 export interface Restaurant {
@@ -51,6 +53,7 @@ export interface Category {
   id: number;
   name: string;
   slug: string;
+  items: MenuItem[];
 }
 
 export interface MenuType {
@@ -65,8 +68,8 @@ export interface MenuItem {
   id: number;
   name: string;
   description: string;
-  image: string;
   price: number;
+  image: string;
   in_stock: boolean;
   created_at: string;
   updated_at: string;
@@ -107,4 +110,8 @@ export interface BranchInfo {
   ubication: string;
   slug: string;
   image: string;
+}
+
+export interface RestaurantMenuProps {
+  addToCart: (item: CartItem) => void;
 }

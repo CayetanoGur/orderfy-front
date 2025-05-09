@@ -37,6 +37,10 @@ const Cart: React.FC<CartProps> = ({ items, setItems }) => {
     0
   );
 
+  // Get slugs from the first item (they should all be the same)
+  const restaurantSlug = items[0]?.restaurantSlug;
+  const branchSlug = items[0]?.branchSlug;
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
@@ -82,12 +86,16 @@ const Cart: React.FC<CartProps> = ({ items, setItems }) => {
           </div>
           <div className="mt-6">
             <p className="text-xl font-bold">Total: ${total.toFixed(2)}</p>
-            <Link
-              to="/checkout"
-              className="mt-4 bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 inline-block"
-            >
-              Proceed to Checkout
-            </Link>
+            {restaurantSlug && branchSlug ? (
+              <Link
+                to={`/checkout/${restaurantSlug}/${branchSlug}`}
+                className="mt-4 bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 inline-block"
+              >
+                Proceed to Checkout
+              </Link>
+            ) : (
+              <p className="mt-4 text-red-500">Please select a restaurant and branch to proceed to checkout</p>
+            )}
           </div>
         </>
       )}

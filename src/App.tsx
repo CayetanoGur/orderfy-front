@@ -1,7 +1,7 @@
 // App.tsx
 
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useParams } from 'react-router-dom';
 import Header from './components/Header';
 import RestaurantList from './components/RestaurantList';
 import BranchList from './components/BranchList';
@@ -22,6 +22,17 @@ import AddBranchForm from './components/AddBranchForm';
 import AddTypeForm from './components/AddTypeForm';
 import AddCategoryForm from './components/AddCategoryForm';
 
+// Create a wrapper component to get URL parameters
+const CheckoutWrapper: React.FC<{ cartItems: CartItem[] }> = ({ cartItems }) => {
+  const { restaurantSlug, branchSlug } = useParams<{ restaurantSlug: string; branchSlug: string }>();
+  return <Checkout cartItems={cartItems} restaurantSlug={restaurantSlug || ''} branchSlug={branchSlug || ''} />;
+};
+
+// Create a wrapper component for Cart
+const CartWrapper: React.FC<{ items: CartItem[]; setItems: React.Dispatch<React.SetStateAction<CartItem[]>> }> = ({ items, setItems }) => {
+  return <Cart items={items} setItems={setItems} />;
+};
+
 const App: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
@@ -37,10 +48,12 @@ const App: React.FC = () => {
           <main className="container mx-auto px-4 py-8">
             <Routes>
               <Route path="/" element={<RestaurantList />} />
+              <Route path="/cart" element={<Cart items={cartItems} setItems={setCartItems} />} />
               <Route path="/restaurant/:restaurantSlug" element={<BranchList />} />
               <Route path="/restaurant/:restaurantSlug/:branchSlug" element={<RestaurantMenu addToCart={addToCart} />} />
-              <Route path="/cart" element={<Cart items={cartItems} setItems={setCartItems} />} />
-              <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
+              <Route path="/restaurant/:restaurantSlug/:branchSlug/cart" element={<CartWrapper items={cartItems} setItems={setCartItems} />} />
+              <Route path="/checkout/:restaurantSlug/:branchSlug" element={<CheckoutWrapper cartItems={cartItems} />} />
+              <Route path="/checkout" element={<div className="text-center p-8">Please select a restaurant and branch to proceed to checkout</div>} />
               <Route path="/dashboard" element={<RestaurantDashboard />} />
               <Route path="/add-dish" element={<AddDish />} />  // Set up routing for AddDish
               <Route path="/login" element={<Login />} />

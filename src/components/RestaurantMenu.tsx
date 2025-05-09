@@ -1,25 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { PlusCircle, Clock, ArrowLeft } from "lucide-react";
-import { CartItem, MenuType } from "../types";
-
-interface RestaurantMenuProps {
-  addToCart: (item: CartItem) => void;
-}
+import { CartItem, MenuType, RestaurantMenuProps } from "../types";
 
 const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
   const { restaurantSlug, branchSlug } = useParams<{ restaurantSlug: string; branchSlug: string }>();
   const navigate = useNavigate();
   const [menuTypes, setMenuTypes] = useState<MenuType[]>([]);
   const [activeType, setActiveType] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [restaurantName, setRestaurantName] = useState('');
+  const [branchName, setBranchName] = useState('');
 
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/service/get_menu_with_type/${restaurantSlug}/${branchSlug}`);
-        const data = await response.json();
+        // First fetch restaurant and branch info
+        const restaurantResponse = await fetch(`http://127.0.0.1:8000/database/${restaurantSlug}/`);
+        const restaurantData = await restaurantResponse.json();
+        setRestaurantName(restaurantData.restaurant.name);
 
-        const formattedMenuTypes = data.menus.map((menu: any) => ({
+        const branchResponse = await fetch(`http://127.0.0.1:8000/database/${restaurantSlug}/${branchSlug}/types/`);
+        const branchData = await branchResponse.json();
+        setBranchName(branchData.branch.name);
+
+        // Then fetch menu data
+        const menuResponse = await fetch(`http://127.0.0.1:8000/service/get_menu_with_type/${restaurantSlug}/${branchSlug}`);
+        const menuData = await menuResponse.json();
+
+        const formattedMenuTypes = menuData.menus.map((menu: any) => ({
           id: menu.type_of_category.id,
           name: menu.type_of_category.name,
           slug: menu.type_of_category.slug,
@@ -40,11 +49,27 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
         }
       } catch (error) {
         console.error('Error fetching menu data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchMenuData();
   }, [restaurantSlug, branchSlug]);
+
+  const handleAddToCart = (item: any) => {
+    addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: 1,
+      restaurantSlug: restaurantSlug || '',
+      branchSlug: branchSlug || ''
+    });
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (menuTypes.length === 0) return <div>No menu available</div>;
 
   return (
     <div>
@@ -55,7 +80,15 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
         <ArrowLeft size={20} className="mr-2" />
         Go Back
       </button>
-      <h1 className="text-3xl font-bold mb-6">Restaurant Menu</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">{restaurantName} - {branchName}</h1>
+        <Link
+          to={`/restaurant/${restaurantSlug}/${branchSlug}/cart`}
+          className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors duration-300"
+        >
+          View Cart
+        </Link>
+      </div>
       
       {/* Menu Type Tabs */}
       <div className="mb-8 flex space-x-2 overflow-x-auto pb-2">
@@ -99,11 +132,11 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ addToCart }) => {
                     </p>
                   </div>
                   <img 
-                    src={item.image as string} 
+                    src={item.image} 
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded-full mr-4" />
                   <button
-                    onClick={() => addToCart({ ...item, quantity: 1 })}
+                    onClick={() => handleAddToCart(item)}
                     className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 flex items-center"
                   >
                     <PlusCircle size={20} className="mr-2" />
