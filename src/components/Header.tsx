@@ -9,14 +9,14 @@ const Header: React.FC = () => {
         <Link to="/" className="text-2xl font-bold">Orderfy</Link>
         <nav>
           <ul className="flex space-x-4">
-            
-              <Link to="/cart" className="hover:text-green-200">
-                <ShoppingCart className="inline-block mr-1" size={20} />
-                Cart
-              </Link>
-            
             <li>
-              <Link to="/dashboard" className="hover:text-green-200">Dash</Link>
+              <Link to="/cart" className="hover:text-green-200 flex items-center justify-center">
+                <ShoppingCart className="inline-block mr-1" size={18} />
+                <span>Cart</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/dashboard" className="hover:text-green-200">Dashboard</Link>
             </li>
           </ul>
         </nav>
