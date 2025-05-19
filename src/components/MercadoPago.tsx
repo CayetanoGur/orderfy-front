@@ -19,7 +19,7 @@ const CardPaymentBrick: React.FC<MercadoPagoProps> = ({ amount, email, onSuccess
     const script = document.createElement("script");
     script.src = "https://sdk.mercadopago.com/js/v2";
     script.onload = () => {
-      const mp = new window.MercadoPago("TEST-4a1a0c89-5c1a-4c1a-9c1a-0c89c1a0c89", {
+      const mp = new window.MercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "", {
         locale: "es-AR"
       });
 
@@ -50,16 +50,21 @@ const CardPaymentBrick: React.FC<MercadoPagoProps> = ({ amount, email, onSuccess
             },
             onSubmit: async (cardFormData: any) => {
               try {
+                // Convert the data to FormData format
+                const formData = new FormData();
+                formData.append("transaction_amount", amount.toString());
+                formData.append("token", cardFormData.token);
+                formData.append("description", "Payment for order");
+                formData.append("installments", cardFormData.installments.toString());
+                formData.append("payment_method_id", cardFormData.payment_method_id);
+                formData.append("cardholderEmail", email);
+                formData.append("identificationType", cardFormData.payer.identification.type);
+                formData.append("identificationNumber", cardFormData.payer.identification.number);
+                formData.append("cardholderName", cardFormData.payer.first_name);
+
                 const response = await fetch("http://127.0.0.1:8000/payment/mercadopago_payment/", {
                   method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    ...cardFormData,
-                    amount: amount,
-                    email: email
-                  }),
+                  body: formData,
                 });
 
                 if (!response.ok) {
