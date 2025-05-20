@@ -19,7 +19,7 @@ const CardPaymentBrick: React.FC<MercadoPagoProps> = ({ amount, email, onSuccess
     const script = document.createElement("script");
     script.src = "https://sdk.mercadopago.com/js/v2";
     script.onload = () => {
-      const mp = new window.MercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "", {
+      const mp = new window.MercadoPago("TEST-7080fcd8-5b67-4723-baf0-4e26e7773cd3", {
         locale: "es-AR"
       });
 
@@ -68,36 +68,79 @@ const CardPaymentBrick: React.FC<MercadoPagoProps> = ({ amount, email, onSuccess
                 });
 
                 if (!response.ok) {
-                  throw new Error('Payment failed');
+                  const errorData = await response.json();
+                  throw new Error(errorData.error || 'Payment failed');
                 }
 
                 const data = await response.json();
                 onSuccess(data);
               } catch (error) {
                 console.error("Payment error:", error);
-                onError(error);
+                if (error instanceof Error) {
+                  if (error.message.includes('ERR_BLOCKED_BY_CLIENT')) {
+                    onError(new Error('Payment processing is being blocked by your browser. Please disable any ad blockers or security extensions and try again.'));
+                  } else {
+                    onError(error);
+                  }
+                } else {
+                  onError(new Error('An unexpected error occurred during payment processing. Please try again.'));
+                }
               }
             },
             onError: (error: any) => {
               console.error("Form error:", error);
-              onError(error);
+              
+              // Handle specific error cases
+              if (error.type === 'non_critical') {
+                switch (error.cause) {
+                  case 'secure_fields_card_token_creation_failed':
+                    onError(new Error('Failed to process card information. Please check your card details and try again.'));
+                    break;
+                  case 'invalid_card_number':
+                    onError(new Error('Invalid card number. Please check and try again.'));
+                    break;
+                  case 'invalid_cardholder_name':
+                    onError(new Error('Invalid cardholder name. Please check and try again.'));
+                    break;
+                  case 'invalid_expiration_date':
+                    onError(new Error('Invalid expiration date. Please check and try again.'));
+                    break;
+                  case 'invalid_security_code':
+                    onError(new Error('Invalid security code. Please check and try again.'));
+                    break;
+                  default:
+                    onError(new Error(error.message || 'An error occurred with the payment form. Please try again.'));
+                }
+              } else if (error instanceof Error) {
+                if (error.message.includes('ERR_BLOCKED_BY_CLIENT')) {
+                  onError(new Error('Payment form is being blocked by your browser. Please disable any ad blockers or security extensions and try again.'));
+                } else {
+                  onError(error);
+                }
+              } else {
+                onError(new Error('An unexpected error occurred with the payment form. Please try again.'));
+              }
             },
           },
         };
 
         try {
-          window.cardPaymentBrickController = await bricksBuilder.create(
-            "cardPayment",
-            "cardPaymentBrick_container",
-            settings
-          );
+        window.cardPaymentBrickController = await bricksBuilder.create(
+          "cardPayment",
+          "cardPaymentBrick_container",
+          settings
+        );
         } catch (error) {
           console.error("Error creating payment form:", error);
-          onError(error);
+          onError(new Error('Failed to initialize payment form. Please refresh the page and try again.'));
         }
       };
 
       renderCardPaymentBrick();
+    };
+
+    script.onerror = () => {
+      onError(new Error('Failed to load MercadoPago SDK. Please check your internet connection and try again.'));
     };
 
     document.body.appendChild(script);

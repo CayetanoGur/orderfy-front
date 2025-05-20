@@ -24,6 +24,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, restaurantSlug, branchSl
   });
   const [showPayment, setShowPayment] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,14 +39,20 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, restaurantSlug, branchSl
   const handlePaymentSuccess = async (response: any) => {
     try {
       setIsProcessing(true);
-      const orderData = { 
-        ...formData, 
-        items: cartItems,
-        restaurantSlug,
-        branchSlug,
-        paymentId: response.id,
-        status: 'pending'
+      setError(null);
+
+      const orderData = {
+        name: formData.name,
+        email: formData.email,
+        table: parseInt(formData.table),
+        branchSlug: branchSlug,
+        items: cartItems.map(item => ({
+          id: item.id,
+          quantity: item.quantity
+        }))
       };
+
+      console.log('Sending order data:', orderData);
 
       const orderResponse = await fetch('http://127.0.0.1:8000/orders/create/', {
         method: 'POST',
@@ -55,16 +62,24 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, restaurantSlug, branchSl
         body: JSON.stringify(orderData),
       });
 
+      const orderResult = await orderResponse.json();
+
       if (!orderResponse.ok) {
-        throw new Error('Failed to create order');
+        throw new Error(orderResult.error || 'Failed to create order');
       }
 
-      const orderResult = await orderResponse.json();
-      alert('Order placed successfully!');
-      navigate('/');
+      // Clear cart and redirect
+      localStorage.removeItem('cart');
+      navigate('/success', { 
+        state: { 
+          orderId: orderResult.order_id,
+          message: 'Order placed successfully!' 
+        }
+      });
     } catch (error) {
       console.error('Error placing order:', error);
-      alert('Failed to place order. Please try again.');
+      setError(error instanceof Error ? error.message : 'Failed to place order. Please try again.');
+      setShowPayment(false);
     } finally {
       setIsProcessing(false);
     }
@@ -72,15 +87,31 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, restaurantSlug, branchSl
 
   const handlePaymentError = (error: any) => {
     console.error('Payment error:', error);
-    alert('Payment failed. Please try again.');
+    setError(error instanceof Error ? error.message : 'Payment failed. Please try again.');
     setShowPayment(false);
   };
 
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Checkout</h1>
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          <p className="font-semibold">Error:</p>
+          <p>{error}</p>
+          {error.includes('blocked by your browser') && (
+            <div className="mt-2">
+              <p className="text-sm">To resolve this issue:</p>
+              <ul className="list-disc list-inside text-sm mt-1">
+                <li>Disable any ad blockers or security extensions</li>
+                <li>Try using a different browser</li>
+                <li>Clear your browser cache and cookies</li>
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <h2 className="text-xl font-semibold mb-4">Order Summary</h2>

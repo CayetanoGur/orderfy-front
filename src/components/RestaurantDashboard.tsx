@@ -22,26 +22,26 @@ const RestaurantDashboard: React.FC = () => {
       return;
     }
 
-    try {
+      try {
       setLoading(true);
       const response = await fetch(`http://127.0.0.1:8000/database/${user.restaurantSlug}/`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
         console.log('Restaurant data:', data);
-        setRestaurant({
-          id: data.restaurant.id,
-          name: data.restaurant.name,
-          description: data.restaurant.description,
-          branches: [], // Fill as needed
-          orders: [], // Fill as needed
-          image: data.restaurant.image,
-          logo: data.restaurant.logo,
-          primary_color: data.restaurant.primary_color,
-          secondary_color: data.restaurant.secondary_color,
+          setRestaurant({
+            id: data.restaurant.id,
+            name: data.restaurant.name,
+            description: data.restaurant.description,
+            branches: [], // Fill as needed
+            orders: [], // Fill as needed
+            image: data.restaurant.image,
+            logo: data.restaurant.logo,
+            primary_color: data.restaurant.primary_color,
+            secondary_color: data.restaurant.secondary_color,
           slug: data.restaurant.slug
         });
       } else {
@@ -116,11 +116,11 @@ const RestaurantDashboard: React.FC = () => {
             if (Array.isArray(categoryData)) {
               categoryData.forEach((item: any) => {
                 allMenuItems.push({
-                  id: item.id,
-                  name: item.name,
-                  description: item.description,
-                  image: item.image,
-                  price: item.price,
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            image: item.image,
+            price: item.price,
                   in_stock: item.in_stock,
                   created_at: item.created_at || new Date().toISOString(),
                   updated_at: item.updated_at || new Date().toISOString(),
@@ -136,13 +136,13 @@ const RestaurantDashboard: React.FC = () => {
         setMenuItems(allMenuItems);
       } else {
         setError('Failed to fetch menu data');
-      }
-    } catch (error) {
+        }
+      } catch (error) {
       setError('An error occurred while fetching menu data');
     } finally {
       setLoading(false);
-    }
-  };
+      }
+    };
 
   useEffect(() => {
     fetchRestaurantData();
