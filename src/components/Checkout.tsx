@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CardPaymentBrick from './MercadoPago';
+import MercadoPagoForm from './MercadoPagoForm';
 
 interface CartItem {
   id: number;
@@ -17,6 +18,7 @@ interface CheckoutProps {
 
 const Checkout: React.FC<CheckoutProps> = ({ cartItems, restaurantSlug, branchSlug }) => {
   const navigate = useNavigate();
+  const { branchSlug: urlBranchSlug } = useParams();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -114,6 +116,10 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, restaurantSlug, branchSl
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
+          <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
+          <MercadoPagoForm total={total} />
+        </div>
+        <div>
           <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
           {cartItems.map((item) => (
             <div key={`checkout-item-${item.id}`} className="flex justify-between mb-2">
@@ -127,74 +133,6 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, restaurantSlug, branchSl
               <span>${total.toFixed(2)}</span>
             </div>
           </div>
-        </div>
-        <div>
-          {!showPayment ? (
-            <>
-              <h2 className="text-xl font-semibold mb-4">Table Information</h2>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block mb-1">Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block mb-1">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="table" className="block mb-1">Table Number</label>
-                  <input
-                    type="text"
-                    id="table"
-                    name="table"
-                    value={formData.table}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-300"
-                >
-                  Proceed to Payment
-                </button>
-              </form>
-            </>
-          ) : (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Payment Information</h2>
-              {isProcessing ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
-                  <p className="mt-4">Processing your payment...</p>
-                </div>
-              ) : (
-                <CardPaymentBrick
-                  amount={total}
-                  email={formData.email}
-                  onSuccess={handlePaymentSuccess}
-                  onError={handlePaymentError}
-                />
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>
